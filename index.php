@@ -31,7 +31,7 @@ if (!is_null($events['events'])) {
               default:
                 $respMessage = 'What is your sex? M or F';
                 break;
-              
+          }    
               
               
           $httpClient = new CurlHTTPClient($channel_token);
@@ -39,7 +39,7 @@ if (!is_null($events['events'])) {
           $textMessageBuilder = new TextMessageBuilder($respMessage); 
           $response = $bot->replyMessage($replyToken, $textMessageBuilder);  
         break;
-        }
+        
       }
   }
 echo 'OK';
