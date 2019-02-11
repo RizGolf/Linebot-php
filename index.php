@@ -36,7 +36,9 @@ if (!is_null($events['events'])) {
           error_log($sql);
         
           if($result == false || $result->rowCount() <=0) {
-            
+             
+             echo 'result is $result'
+               
               switch($event['message']['text']) {
                  case '1':
                     // Insert
