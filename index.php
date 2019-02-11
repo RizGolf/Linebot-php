@@ -36,8 +36,9 @@ if (!is_null($events['events'])) {
           error_log($sql);
         
           if($result == false || $result->rowCount() <=0) {
-             
-             echo "result is $result";
+             $num = 5;
+             sprintf("result is %d", $num);
+              
                
               switch($event['message']['text']) {
                  case '1':
