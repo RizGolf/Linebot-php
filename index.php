@@ -37,7 +37,7 @@ if (!is_null($events['events'])) {
         
           if($result == false || $result->rowCount() <=0) {
              
-             echo "result is $result"
+             echo "result is $result";
                
               switch($event['message']['text']) {
                  case '1':
