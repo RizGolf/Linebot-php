@@ -30,6 +30,10 @@ if (!is_null($events['events'])) {
           $pass = '886da5a359b454bb65e8363e746a9c400e686fce64546e2ac771600c202bc652';
           $connection = new PDO("pgsql:host=$host;dbname=$dbname", $user, $pass);
         
+          $userId = "test123456";
+          $sql2 = sprintf("SELECT * FROM poll WHERE user_id='%s' ", $userId);
+          $result2 = $connection->query($sql2);
+        
           $sql = sprintf("SELECT * FROM poll WHERE user_id='%s' ", $event['source']['userId']);
           $result = $connection->query($sql);
         
