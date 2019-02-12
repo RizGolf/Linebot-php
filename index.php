@@ -35,7 +35,7 @@ if (!is_null($events['events'])) {
         
           error_log($sql);
         
-          if($result == false || $result->rowCount() >=10) {
+          if($result == True) {
            
                
               switch($event['message']['text']) {
