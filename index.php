@@ -29,20 +29,14 @@ if (!is_null($events['events'])) {
           $user = 'rdrqgyesvgiigm';
           $pass = '886da5a359b454bb65e8363e746a9c400e686fce64546e2ac771600c202bc652';
           $connection = new PDO("pgsql:host=$host;dbname=$dbname", $user, $pass);
-        
-          $userId = "test123456";
-          $sql2 = sprintf("SELECT * FROM poll WHERE user_id='%s' ", $userId);
-          $result2 = $connection->query($sql2);
-        
+
           $sql = sprintf("SELECT * FROM poll WHERE user_id='%s' ", $event['source']['userId']);
           $result = $connection->query($sql);
         
           error_log($sql);
         
-          if($result == false || $result->rowCount() <=0) {
-             $num = 5;
-             sprintf("result is %d", $num);
-              
+          if($result == false || $result->rowCount() >=10) {
+           
                
               switch($event['message']['text']) {
                  case '1':
