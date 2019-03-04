@@ -49,7 +49,7 @@ if (!is_null($events['events'])) {
                        $statement = $connection->prepare('INSERT INTO poll ( user_id, answer )
            VALUES ( :userID, :answer )'); 
                        $statement->execute($params);
-                  
+                    
                     // Query
                     $sql = sprintf("SELECT * FROM poll WHERE answer='1' AND user_id='%s' ",
            $event['source']['userId']);
