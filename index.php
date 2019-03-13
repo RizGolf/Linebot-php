@@ -17,7 +17,7 @@ if (!is_null($events['events'])) {
   // Loop through each event
   foreach ($events['events'] as $event) {
       // Line API send a lot of event type, we interested in message only. 
-      if ($event['type'] == 'message' && $event['message'] == 'Startquiz') {
+      if ($event['type'] == 'message' && $event['message']['type'] == 'text') {
         
       // Get replyToken
       $replyToken = $event['replyToken'];
@@ -38,7 +38,7 @@ if (!is_null($events['events'])) {
           if($result == True) {
            
                
-              switch($event['message']['text']) {
+              switch($event['message']['q']) {
                  case '1':
                     // Insert
                     $params = array(
