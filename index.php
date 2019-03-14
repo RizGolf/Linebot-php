@@ -33,7 +33,7 @@ if (!is_null($events['events'])) {
           $sql = sprintf("SELECT * FROM poll WHERE user_id='%s' ", $event['source']['userId']);
           $result = $connection->query($sql);
         
-          error_log($amount);
+          error_log($params);
         
           if($result == True) {
            
