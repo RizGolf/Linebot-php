@@ -5,10 +5,10 @@
   use LineBotExamPostgreSQL\CreateTables as CreateTables;
 
   // Database data
-  $host = '';
-  $dbname = '';
-  $user = '';
-  $pass = '';
+  $host = 'ec2-23-21-244-254.compute-1.amazonaws.com';
+  $dbname = 'dd2msimtj928n7';
+  $user = 'rdrqgyesvgiigm';
+  $pass = '886da5a359b454bb65e8363e746a9c400e686fce64546e2ac771600c202bc652';
 
   error_log("host: " .$host. "\n");
 
