@@ -1,65 +1,192 @@
-<?php //test
+<?php
+require_once('./vendor/autoload.php');
 
-  include "setup-database.php";
+include "./src/setup-database.php";
+include "./src/question.php";
+include "./src/user.php";
 
-  use LineBotExamPostgreSQL\CreateTables as CreateTables;
+// Project Namespace
+use LineBotExamPostgreSQL\Database as Database;
+use LineBotExamUser\User as User;
+use LineBotExamQuestion\Question as Question;
 
-  // Database data
-  $host = '';
-  $dbname = '';
-  $user = '';
-  $pass = '';
+// Line Namespace
+use \LINE\LINEBot\HTTPClient\CurlHTTPClient;
+use \LINE\LINEBot;
+use \LINE\LINEBot\MessageBuilder\TextMessageBuilder;
 
-  error_log("host: " .$host. "\n");
+$channel_token = 'Loscy5DKyMHfMjso60zbBEybOY3oBqn5MSFNVsnGt/l6LNW5llEaldDMkv/egE1tgz049M0k3KwdSObL3uwIzVVObwZvCBKEfufsEiKedWmiC+qXtrnGIkwEzdddQ/IUYyVpCHBY+AgjINXJFyLGGAdB04t89/1O/w1cDnyilFU=
+';
+$channel_secret = '9c55e495d3111033d3414d2ece36e079';
 
-  // connect to the PostgreSQL database
-  $conn = new PDO("pgsql:host=$host;dbname=$dbname", $user, $pass);
+// Get message from Line API
+$content = file_get_contents('php://input');
+$events = json_decode($content, true);
 
-  // Check connection
-  if ($conn->connect_error) {
-      die("Connection failed: " . $conn->connect_error);
-  } 
+$host = 'ec2-23-21-244-254.compute-1.amazonaws.com';
+$dbname = 'dd2msimtj928n7';
+$user = 'rdrqgyesvgiigm';
+$pass = '886da5a359b454bb65e8363e746a9c400e686fce64546e2ac771600c202bc652';
+$connection = new PDO("pgsql:host=$host;dbname=$dbname", $user, $pass);
 
-  try {
+// New class to use method in class
+$dbCreator = new Database($connection);
+$userCreator = new User($connection);
+$questionCreator = new Question($connection);
+
+if (!is_null($events['events'])) {
+  foreach ($events['events'] as $event) {
+    error_log("============================== Event ==============================");
+
+    $userToken = $event['source']['userId'];
+    $replyToken = $event['replyToken'];
+
+    if ($event['type'] == 'unfollow') {
+      // Delet user token when user block line bot
+      $userCreator->deleteUser($userToken);
+      error_log('Delete user from database when that user unfollow line bot: ' .$userToken);
+      error_log("============================== UNFOLLOW ==============================");
+    } else {
+      if ($event['type'] == 'follow') {
+        // First user add line bot
+        $respMessage = "ยินดีต้อนรับเข้าสู่ห้องสอบออนไลน์ 📝 จะมีคำถามทั้งหมด 10 ข้อ ถ้าคุณตอบคำถามครบแล้ว จะมีสรุปผลคะแนนที่คุณทำได้บอกไว้หลังจากการตอบคำถามสุดท้ายเสร็จสิ้น มาเริ่มคำถามแรกกันเลย \n\nกรุณาพิมพ์ข้อความคำว่า \"Ready\" เพื่อเริ่มทำข้อสอบ";
+        error_log("============================== FOLLOW ==============================");
+      } else if ($event['type'] == 'message' && $event['message']['type'] == 'text') {
+        // Check user already answered 10 questions
+        $sql = sprintf("SELECT * FROM public.users WHERE token='%s' ", $event['source']['userId']);
+        $result = $connection->query($sql);
+
+        if ($result != false && $result->rowCount() == 11) {
+          if (
+            $event['message']['text'] == '1' || $event['message']['text'] == '2' ||
+            $event['message']['text'] == '3' || $event['message']['text'] == '4'
+          ) {
+              $userAnswer = $event['message']['text'];
+              $lastUserData = $userCreator->getLastUser($userToken);
+              error_log("last user id -> ".$lastUserData['id']);
+              $updateUserAnswer = $userCreator->updateUser($lastUserData['id'], $userAnswer);
+              error_log('Insert user token: ' . $userToken . ' | with id: ' .$userId);
+
+              // Insert user complete exam by nine hundred ninety nine number
+              $userId = $userCreator->insertUser($userToken, 999, 999);
+              error_log('Insert user complete exam with token: ' . $userToken . ' | with id: ' .$userId);
+
+              $score = $questionCreator->calculateQuestions($userToken);
+              $respMessage = 'จำนวนข้อที่คุณตอบถูกทั้งหมด '.$score.' ข้อ';
+          } else {
+            $respMessage =  "กรุณากดคำตอบให้ถูกต้อง สามารถตอบได้เฉพาะหมายเลข 1 - 4 เท่านั้น";
+          }
+        } else if ($result != false && $result->rowCount() == 12) {
+            $score = $questionCreator->calculateQuestions($userToken);
+            $respMessage = 'คุณได้ตอบคำถามครบ 10 ข้อแล้ว คะแนนของคุณคือ '.$score. ' คะแนน';
+        } else {
+          // Check user already start exam
+          $sql = sprintf("SELECT * FROM public.users WHERE answer='%d' and token='%s' ", 0, $userToken);
+          $checkUserAlready = $connection->query($sql);
+
+          $questionData = $questionCreator->getQuestion($userToken);
+          error_log("Receive question data with id: ".$questionData['id']);
+
+          if ($event['message']['text'] == "Ready" ||
+              $event['message']['text'] == "ready" &&
+              $checkUserAlready->rowCount() == 0
+          ) {
+            // insert user already by zero number
+            $userId = $userCreator->insertUser($userToken, 0, 0);
+            error_log('Insert user already with token: ' . $userToken . ' | with id: ' .$userId);
     
-    // Pass connection to pdo in setup.database.php file
-    $dbCreator = new CreateTables($conn);
-    
-    // create tables and query the table from the
-    // database
-    $tables = $dbCreator->createTables()->getTables();
+            if ($questionData != false) {
+              // Prepare insert first answer
+              $userId = $userCreator->insertUser($userToken, 99, $questionData["id"]);
+              error_log('Insert user token: ' . $userToken . ' | with id: ' .$userId);
 
-    foreach ($tables as $table){
-        echo "Create table: " .$table . ' Success <br>';
+              $respMessage = $questionData["title"];
+            } else {
+              $respMessage = 'เกิดข้อผิดพลาด ในการดึงข้อมูลคำถาม ขออภัยในความไม่สะดวก';
+            }
+
+          } else if ($checkUserAlready->rowCount() == 1) {
+            try {
+              if($result != false && $result->rowCount() < 11) {
+    
+                switch($event['message']['text']) {
+                  case '1':
+                    $userAnswer = 1;
+                    if ($questionData != false) {
+                      $lastUserData = $userCreator->getLastUser($userToken);
+                      error_log("last user id -> ".$lastUserData['id']);
+                      $updateUserAnswer = $userCreator->updateUser($lastUserData['id'], $userAnswer);
+                      $userId = $userCreator->insertUser($userToken, $userAnswer, $questionData["id"]);
+                      error_log('Insert user token: ' . $userToken . ' | with id: ' .$userId);
+                      $respMessage = $questionData["title"];
+                    } else {
+                      $respMessage = 'เกิดข้อผิดพลาด ในการดึงข้อมูลคำถาม ขออภัยในความไม่สะดวก';
+                    }
+                  break;
+                  case '2':
+                    $userAnswer = 2;
+                    if ($questionData != false) {
+                      $lastUserData = $userCreator->getLastUser($userToken);
+                      error_log("last user id -> ".$lastUserData['id']);
+                      $updateUserAnswer = $userCreator->updateUser($lastUserData['id'], $userAnswer);
+                      $userId = $userCreator->insertUser($userToken, $userAnswer, $questionData["id"]);
+                      error_log('Insert user token: ' . $userToken . ' | with id: ' .$userId);
+                      $respMessage = $questionData["title"];
+                    } else {
+                      $respMessage = 'เกิดข้อผิดพลาด ในการดึงข้อมูลคำถาม ขออภัยในความไม่สะดวก';
+                    }
+                  break;
+                  case '3':
+                    $userAnswer = 3;
+                    if ($questionData != false) {
+                      $lastUserData = $userCreator->getLastUser($userToken);
+                      error_log("last user id -> ".$lastUserData['id']);
+                      $updateUserAnswer = $userCreator->updateUser($lastUserData['id'], $userAnswer);
+                      $userId = $userCreator->insertUser($userToken, $userAnswer, $questionData["id"]);
+                      error_log('Insert user token: ' . $userToken . ' | with id: ' .$userId);
+                      $respMessage = $questionData["title"];
+                    } else {
+                      $respMessage = 'เกิดข้อผิดพลาด ในการดึงข้อมูลคำถาม ขออภัยในความไม่สะดวก';
+                    }
+                  break;
+                  case '4':
+                    $userAnswer = 4;
+                    if ($questionData != false) {
+                      $lastUserData = $userCreator->getLastUser($userToken);
+                      error_log("last user id -> ".$lastUserData['id']);
+                      $updateUserAnswer = $userCreator->updateUser($lastUserData['id'], $userAnswer);
+                      $userId = $userCreator->insertUser($userToken, $userAnswer, $questionData["id"]);
+                      error_log('Insert user token: ' . $userToken . ' | with id: ' .$userId);
+                      $respMessage = $questionData["title"];
+                    } else {
+                      $respMessage = 'เกิดข้อผิดพลาด ในการดึงข้อมูลคำถาม ขออภัยในความไม่สะดวก';
+                    }
+                  break;            
+                  default:
+                    $respMessage =  "กรุณากดคำตอบให้ถูกต้อง สามารถตอบได้เฉพาะหมายเลข 1 - 4 เท่านั้น";
+                    break;
+                  }    
+                } else {
+                    $score = $questionCreator->calculateQuestions($userToken);
+                    $respMessage = 'คุณได้ตอบคำถามครบ 10 ข้อแล้ว จำนวนข้อที่คุณตอบถูกทั้งหมดคือ : '.$score.' ข้อ';
+                }
+                error_log("============================== Message ==============================");
+            } catch(Exception $e) { 
+              error_log($e->getMessage());
+            }
+          } else {
+            $respMessage = 'กรุณาพิมพ์ข้อความคำว่า "Ready" เพื่อเริ่มทำข้อสอบ';
+          }
+        }
+      }
+
+      $httpClient = new CurlHTTPClient($channel_token);
+      $bot = new LINEBot($httpClient, array('channelSecret' => $channel_secret));  
+      $textMessageBuilder = new TextMessageBuilder($respMessage); 
+      $response = $bot->replyMessage($replyToken, $textMessageBuilder);
+
     }
-
-    // insert questions
-    // $id = $dbCreator->insertQuestions('Insert question', 2);
-    // echo 'The question has been inserted with the id ' . $id . '<br>';
-
-    // insert a list of stocks into the stocks table
-    $list = $dbCreator->insertQuestionList([
-      ['title' => 'Question 1', 'correctAnswer' => 2],
-      ['title' => 'Question 2', 'correctAnswer' => 3],
-      ['title' => 'Question 3', 'correctAnswer' => 4],
-      ['title' => 'Question 4', 'correctAnswer' => 1],
-      ['title' => 'Question 5', 'correctAnswer' => 4],
-      ['title' => 'Question 6', 'correctAnswer' => 2],
-      ['title' => 'Question 7', 'correctAnswer' => 1],
-      ['title' => 'Question 8', 'correctAnswer' => 2],
-      ['title' => 'Question 9', 'correctAnswer' => 2],
-      ['title' => 'Question 10', 'correctAnswer' => 3]
-    ]);
-
-    foreach ($list as $id) {
-        echo 'The question has been inserted with the id ' . $id . '<br>';
-    }
-    
-  } catch (\PDOException $e) {
-      error_log("===>>> Error: " .$e->getMessage(). "\n");
-      echo $e->getMessage();
   }
+}
 
-  echo "Line Bot Execute Success"
-
-?>
+echo 'Running Kmutnb Exam Line Bot Success';
