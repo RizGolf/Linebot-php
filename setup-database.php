@@ -27,7 +27,8 @@ class CreateTables {
     $sqlList = ['CREATE TABLE IF NOT EXISTS users (
                     id serial PRIMARY KEY,
                     token TEXT NOT NULL,
-                    answer integer NOT NULL
+                    answer integer NOT NULL,
+                    question integer NOT NULL
                   )',
                 'CREATE TABLE IF NOT EXISTS questions (
                     id serial PRIMARY KEY,
