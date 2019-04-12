@@ -26,7 +26,7 @@ class Question {
     $sql = sprintf("SELECT * FROM public.users WHERE question='%d' and token='%s' ", $randomQuestionId, $userToken);
     $userAlreadyAnswered = $this->pdo->query($sql);
 
-    if($userAlreadyAnswered->rowCount() == 0) {
+    if($userAlreadyAnswered != false && $userAlreadyAnswered->rowCount() == 0) {
       $stmt = $this->pdo->prepare("SELECT * FROM public.questions WHERE id = :randomQuestionId");
       $stmt->bindValue(':randomQuestionId', $randomQuestionId);
       $stmt->execute();
