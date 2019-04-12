@@ -26,7 +26,14 @@ class Question {
     $sql = sprintf("SELECT * FROM public.users WHERE question='%d' and token='%s' ", $randomQuestionId, $userToken);
     $userAlreadyAnswered = $this->pdo->query($sql);
 
-    if($userAlreadyAnswered != false && $userAlreadyAnswered->rowCount() == 0) {
+    if ($userAlreadyAnswered == false) {
+      $stmt = $this->pdo->prepare("SELECT * FROM public.questions WHERE id = :randomQuestionId");
+      $stmt->bindValue(':randomQuestionId', $randomQuestionId);
+      $stmt->execute();
+
+      $question = $stmt->fetch(\PDO::FETCH_ASSOC);
+
+      if ($userAlreadyAnswered == false) {
       $stmt = $this->pdo->prepare("SELECT * FROM public.questions WHERE id = :randomQuestionId");
       $stmt->bindValue(':randomQuestionId', $randomQuestionId);
       $stmt->execute();
@@ -45,8 +52,28 @@ class Question {
         return false;
       }
     } else {
-      error_log("User already answer question witd id: ".$randomQuestionId. " so query find to next question 👉👉👉");
-      return $this->getQuestion($userToken);
+      if($userAlreadyAnswered->rowCount() == 0) {
+        $stmt = $this->pdo->prepare("SELECT * FROM public.questions WHERE id = :randomQuestionId");
+        $stmt->bindValue(':randomQuestionId', $randomQuestionId);
+        $stmt->execute();
+  
+        $question = $stmt->fetch(\PDO::FETCH_ASSOC);
+  
+        if($question != false) {
+          $questionData = array(
+            "id" => $randomQuestionId,
+            "title" => $question['title']
+          );
+          error_log("Send Question data with id: ".$questionData['id']);
+          return $questionData;
+        } else {
+          error_log("Fail to send question data");
+          return false;
+        }
+      } else {
+        error_log("User already answer question witd id: ".$randomQuestionId. " so query find to next question 👉👉👉");
+        return $this->getQuestion($userToken);
+      }
     }
   }
 
