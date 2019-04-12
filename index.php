@@ -1,4 +1,4 @@
-<?php
+<?php //test
 
   include "setup-database.php";
 
