@@ -174,7 +174,7 @@ if (!is_null($events['events'])) {
               error_log($e->getMessage());
             }
           } else {
-            $respMessage = 'กรุณาพิมพ์ข้อความคำว่า "Ready" เพื่อเริ่มทำข้อสอบครับ';
+            $respMessage = 'กรุณาพิมพ์ข้อความคำว่า "Startquiz" เพื่อเริ่มทำข้อสอบครับ';
           }
         }
       }
