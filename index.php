@@ -39,7 +39,7 @@
 
     // insert a list of stocks into the stocks table
     $list = $dbCreator->insertQuestionList([
-      ['title' => 'Question 1', 'correctAnswer' => 2],
+      ['title' => '2+2=? \n\r กด 1 1 \n\r กด 2 4 \n\r กด 3 5 \n\r กด 4 6 \n\r', 'correctAnswer' => 2],
       ['title' => 'Question 2', 'correctAnswer' => 3],
       ['title' => 'Question 3', 'correctAnswer' => 4],
       ['title' => 'Question 4', 'correctAnswer' => 1],
