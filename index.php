@@ -39,20 +39,56 @@
 
     // insert a list of stocks into the stocks table
     $list = $dbCreator->insertQuestionList([
-      ['title' => '2+2=?
-                   กด 1. 1  
-                   กด 2. 4  
-                   กด 3. 5  
-                   กด 4. 6 ', 'correctAnswer' => 2],
-      ['title' => 'Question 2', 'correctAnswer' => 3],
-      ['title' => 'Question 3', 'correctAnswer' => 4],
-      ['title' => 'Question 4', 'correctAnswer' => 1],
-      ['title' => 'Question 5', 'correctAnswer' => 4],
-      ['title' => 'Question 6', 'correctAnswer' => 2],
-      ['title' => 'Question 7', 'correctAnswer' => 1],
-      ['title' => 'Question 8', 'correctAnswer' => 2],
-      ['title' => 'Question 9', 'correctAnswer' => 2],
-      ['title' => 'Question 10', 'correctAnswer' => 3]
+      ['title' => '2+2= ?
+      กด 1. 1  
+      กด 2. 4  
+      กด 3. 5  
+      กด 4. 6 ', 'correctAnswer' => 2],
+      ['title' => '5x5= ?
+      กด 1. 10
+      กด 2. 20
+      กด 3. 25
+      กด 4. 30', 'correctAnswer' => 3],
+      ['title' => 'อวัยวะส่วนใดในร่างกายใช้สำหรับดมกลิ่น ?
+      กด 1. หู
+      กด 2. ตา
+      กด 3. ปาก
+      กด 4. จมูก', 'correctAnswer' => 4],
+      ['title' => 'วันที่ 13 เมษายน ของทุกปี คือเทศกาลอะไร ?
+      กด 1. สงกรานต์
+      กด 2. ลอยกระทง
+      กด 3. คริสต์มาส
+      กด 4. ตรุษจีน', 'correctAnswer' => 1],
+      ['title' => 'ไฟจราจรมีกี่สี ?
+      กด 1. 2 สี
+      กด 2. 5 สี
+      กด 3. 1 สี
+      กด 4. 3 สี', 'correctAnswer' => 4],
+      ['title' => '6-3= ?
+      กด 1. 1
+      กด 2. 3
+      กด 3. 9
+      กด 4. 2', 'correctAnswer' => 2],
+      ['title' => 'สัตว์ชนิดใดถูกจัดประเภทให้เป็นสัตว์เลื้อยคลาน ?
+      กด 1. งู
+      กด 2. สุนัข
+      กด 3. แมว
+      กด 4. มนุษย์', 'correctAnswer' => 1],
+      ['title' => 'สุนัขมีกี่ขา ?
+      กด 1. 1 ขา
+      กด 2. 4 ขา
+      กด 3. 3 ขา
+      กด 4. 2 ขา', 'correctAnswer' => 2],
+      ['title' => 'มนุษย์มีกี่ขา ?
+      กด 1. 1 ขา
+      กด 2. 2 ขา
+      กด 3. 3 ขา
+      กด 4. 4 ขา', 'correctAnswer' => 2],
+      ['title' => '9/3= ?
+      กด 1. 1
+      กด 2. 2
+      กด 3. 3
+      กด 4. 4', 'correctAnswer' => 3]
     ]);
 
     foreach ($list as $id) {
