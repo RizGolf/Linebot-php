@@ -48,9 +48,6 @@ if (!is_null($events['events'])) {
     } else {
       if ($event['type'] == 'follow') {
         // First user add line bot
-        // insert user already by zero number
-        error_log('Before insert first user !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
-        $userId = $userCreator->insertUser($userToken, 0, 0);
         error_log('Insert user already with token: ' . $userToken . ' | with id: ' .$userId);
         $respMessage = "ยินดีต้อนรับเข้าสู่ห้องสอบออนไลน์ 📝 จะมีคำถามทั้งหมด 10 ข้อ ถ้าคุณตอบคำถามครบแล้ว จะมีสรุปผลคะแนนที่คุณทำได้บอกไว้หลังจากการตอบคำถามสุดท้ายเสร็จสิ้น มาเริ่มคำถามแรกกันเลย \n\nกรุณาพิมพ์ข้อความคำว่า \"Startquiz\" เพื่อเริ่มทำข้อสอบ";
         error_log("============================== FOLLOW ==============================");
@@ -94,6 +91,9 @@ if (!is_null($events['events'])) {
               $event['message']['text'] == "startquiz" &&
               $checkUserAlready->rowCount() == 0
           ) {    
+            // insert user already by zero number
+            error_log('Before insert first user !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
+            $userId = $userCreator->insertUser($userToken, 0, 0);
             if ($questionData != false) {
               // Prepare insert first answer
               $userId = $userCreator->insertUser($userToken, 99, $questionData["id"]);
