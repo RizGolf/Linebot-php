@@ -48,7 +48,6 @@ if (!is_null($events['events'])) {
     } else {
       if ($event['type'] == 'follow') {
         // First user add line bot
-        error_log('Insert user already with token: ' . $userToken . ' | with id: ' .$userId);
         $respMessage = "ยินดีต้อนรับเข้าสู่ห้องสอบออนไลน์ 📝 จะมีคำถามทั้งหมด 10 ข้อ ถ้าคุณตอบคำถามครบแล้ว จะมีสรุปผลคะแนนที่คุณทำได้บอกไว้หลังจากการตอบคำถามสุดท้ายเสร็จสิ้น มาเริ่มคำถามแรกกันเลย \n\nกรุณาพิมพ์ข้อความคำว่า \"Startquiz\" เพื่อเริ่มทำข้อสอบ";
         error_log("============================== FOLLOW ==============================");
       } else if ($event['type'] == 'message' && $event['message']['type'] == 'text') {
@@ -80,20 +79,13 @@ if (!is_null($events['events'])) {
             $score = $questionCreator->calculateQuestions($userToken);
             $respMessage = 'คุณได้ตอบคำถามครบ 10 ข้อแล้ว คะแนนของคุณคือ '.$score. ' คะแนน';
         } else {
-          // Check user already start exam
-          $sql = sprintf("SELECT * FROM public.users WHERE answer='%d' and token='%s' ", 0, $userToken);
-          $checkUserAlready = $connection->query($sql);
-
           $questionData = $questionCreator->getQuestion($userToken);
           error_log("Receive question data with id: ".$questionData['id']);
 
-          if ($event['message']['text'] == "Startquiz" ||
-              $event['message']['text'] == "startquiz" &&
-              $checkUserAlready->rowCount() == 0
-          ) {    
+          if (($event['message']['text'] == "Startquiz" || $event['message']['text'] == "startquiz") && $result->rowCount() == 0) {
             // insert user already by zero number
-            error_log('Before insert first user !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
             $userId = $userCreator->insertUser($userToken, 0, 0);
+            error_log('Insert user already with token: ' . $userToken . ' | with id: ' .$userId);
             if ($questionData != false) {
               // Prepare insert first answer
               $userId = $userCreator->insertUser($userToken, 99, $questionData["id"]);
@@ -104,78 +96,68 @@ if (!is_null($events['events'])) {
               $respMessage = 'เกิดข้อผิดพลาด ในการดึงข้อมูลคำถาม ขออภัยในความไม่สะดวก';
             }
 
-          } else if ($checkUserAlready->rowCount() == 1) {
-            try {
-              if($result != false && $result->rowCount() < 11) {
-    
-                switch($event['message']['text']) {
-                  case '1':
-                    $userAnswer = 1;
-                    if ($questionData != false) {
-                      $lastUserData = $userCreator->getLastUser($userToken);
-                      error_log("last user id -> ".$lastUserData['id']);
-                      $updateUserAnswer = $userCreator->updateUser($lastUserData['id'], $userAnswer);
-                      $userId = $userCreator->insertUser($userToken, $userAnswer, $questionData["id"]);
-                      error_log('Insert user token: ' . $userToken . ' | with id: ' .$userId);
-                      $respMessage = $questionData["title"];
-                    } else {
-                      $respMessage = 'เกิดข้อผิดพลาด ในการดึงข้อมูลคำถาม ขออภัยในความไม่สะดวก';
-                    }
-                  break;
-                  case '2':
-                    $userAnswer = 2;
-                    if ($questionData != false) {
-                      $lastUserData = $userCreator->getLastUser($userToken);
-                      error_log("last user id -> ".$lastUserData['id']);
-                      $updateUserAnswer = $userCreator->updateUser($lastUserData['id'], $userAnswer);
-                      $userId = $userCreator->insertUser($userToken, $userAnswer, $questionData["id"]);
-                      error_log('Insert user token: ' . $userToken . ' | with id: ' .$userId);
-                      $respMessage = $questionData["title"];
-                    } else {
-                      $respMessage = 'เกิดข้อผิดพลาด ในการดึงข้อมูลคำถาม ขออภัยในความไม่สะดวก';
-                    }
-                  break;
-                  case '3':
-                    $userAnswer = 3;
-                    if ($questionData != false) {
-                      $lastUserData = $userCreator->getLastUser($userToken);
-                      error_log("last user id -> ".$lastUserData['id']);
-                      $updateUserAnswer = $userCreator->updateUser($lastUserData['id'], $userAnswer);
-                      $userId = $userCreator->insertUser($userToken, $userAnswer, $questionData["id"]);
-                      error_log('Insert user token: ' . $userToken . ' | with id: ' .$userId);
-                      $respMessage = $questionData["title"];
-                    } else {
-                      $respMessage = 'เกิดข้อผิดพลาด ในการดึงข้อมูลคำถาม ขออภัยในความไม่สะดวก';
-                    }
-                  break;
-                  case '4':
-                    $userAnswer = 4;
-                    if ($questionData != false) {
-                      $lastUserData = $userCreator->getLastUser($userToken);
-                      error_log("last user id -> ".$lastUserData['id']);
-                      $updateUserAnswer = $userCreator->updateUser($lastUserData['id'], $userAnswer);
-                      $userId = $userCreator->insertUser($userToken, $userAnswer, $questionData["id"]);
-                      error_log('Insert user token: ' . $userToken . ' | with id: ' .$userId);
-                      $respMessage = $questionData["title"];
-                    } else {
-                      $respMessage = 'เกิดข้อผิดพลาด ในการดึงข้อมูลคำถาม ขออภัยในความไม่สะดวก';
-                    }
-                  break;            
-                  default:
-                    $respMessage =  "กรุณากดคำตอบให้ถูกต้อง สามารถตอบได้เฉพาะหมายเลข 1 - 4 เท่านั้น";
-                    break;
-                  }    
-                } else {
-                    $score = $questionCreator->calculateQuestions($userToken);
-                    $respMessage = 'คุณได้ตอบคำถามครบ 10 ข้อแล้ว จำนวนข้อที่คุณตอบถูกทั้งหมดคือ : '.$score.' ข้อ';
-                }
-                error_log("============================== Message ==============================");
-            } catch(Exception $e) { 
-              error_log($e->getMessage());
-            }
+          } else if ($result->rowCount() > 0 && $result->rowCount() < 11) {
+              switch($event['message']['text']) {
+                case '1':
+                  $userAnswer = 1;
+                  if ($questionData != false) {
+                    $lastUserData = $userCreator->getLastUser($userToken);
+                    error_log("last user id -> ".$lastUserData['id']);
+                    $updateUserAnswer = $userCreator->updateUser($lastUserData['id'], $userAnswer);
+                    $userId = $userCreator->insertUser($userToken, $userAnswer, $questionData["id"]);
+                    error_log('Insert user token: ' . $userToken . ' | with id: ' .$userId);
+                    $respMessage = $questionData["title"];
+                  } else {
+                    $respMessage = 'เกิดข้อผิดพลาด ในการดึงข้อมูลคำถาม ขออภัยในความไม่สะดวก';
+                  }
+                break;
+                case '2':
+                  $userAnswer = 2;
+                  if ($questionData != false) {
+                    $lastUserData = $userCreator->getLastUser($userToken);
+                    error_log("last user id -> ".$lastUserData['id']);
+                    $updateUserAnswer = $userCreator->updateUser($lastUserData['id'], $userAnswer);
+                    $userId = $userCreator->insertUser($userToken, $userAnswer, $questionData["id"]);
+                    error_log('Insert user token: ' . $userToken . ' | with id: ' .$userId);
+                    $respMessage = $questionData["title"];
+                  } else {
+                    $respMessage = 'เกิดข้อผิดพลาด ในการดึงข้อมูลคำถาม ขออภัยในความไม่สะดวก';
+                  }
+                break;
+                case '3':
+                  $userAnswer = 3;
+                  if ($questionData != false) {
+                    $lastUserData = $userCreator->getLastUser($userToken);
+                    error_log("last user id -> ".$lastUserData['id']);
+                    $updateUserAnswer = $userCreator->updateUser($lastUserData['id'], $userAnswer);
+                    $userId = $userCreator->insertUser($userToken, $userAnswer, $questionData["id"]);
+                    error_log('Insert user token: ' . $userToken . ' | with id: ' .$userId);
+                    $respMessage = $questionData["title"];
+                  } else {
+                    $respMessage = 'เกิดข้อผิดพลาด ในการดึงข้อมูลคำถาม ขออภัยในความไม่สะดวก';
+                  }
+                break;
+                case '4':
+                  $userAnswer = 4;
+                  if ($questionData != false) {
+                    $lastUserData = $userCreator->getLastUser($userToken);
+                    error_log("last user id -> ".$lastUserData['id']);
+                    $updateUserAnswer = $userCreator->updateUser($lastUserData['id'], $userAnswer);
+                    $userId = $userCreator->insertUser($userToken, $userAnswer, $questionData["id"]);
+                    error_log('Insert user token: ' . $userToken . ' | with id: ' .$userId);
+                    $respMessage = $questionData["title"];
+                  } else {
+                    $respMessage = 'เกิดข้อผิดพลาด ในการดึงข้อมูลคำถาม ขออภัยในความไม่สะดวก';
+                  }
+                break;            
+                default:
+                  $respMessage =  "กรุณากดคำตอบให้ถูกต้อง สามารถตอบได้เฉพาะหมายเลข 1 - 4 เท่านั้น";
+                  break;   
+              }
           } else {
-            $respMessage = 'กรุณาพิมพ์ข้อความคำว่า "Startquiz" เพื่อเริ่มทำข้อสอบครับ';
+            $respMessage = 'กรุณาพิมพ์ข้อความคำว่า "Startquiz" เพื่อเริ่มทำข้อสอบ';
           }
+          error_log("============================== Message ==============================");
         }
       }
 
