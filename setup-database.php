@@ -29,12 +29,12 @@ class CreateTables {
                     token TEXT NOT NULL,
                     answer integer NOT NULL,
                     question integer NOT NULL
-                  )',
+                  ) CHARACTER SET utf8 COLLATE utf8_general_ci',
                 'CREATE TABLE IF NOT EXISTS questions (
                     id serial PRIMARY KEY,
                     title TEXT NOT NULL,
                     correct_answer integer NOT NULL
-                );'];
+                ) CHARACTER SET utf8 COLLATE utf8_general_ci;'];
 
     // execute each sql statement to create new tables
     foreach ($sqlList as $sql) {
