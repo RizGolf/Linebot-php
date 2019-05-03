@@ -5,20 +5,20 @@
   use LineBotExamPostgreSQL\CreateTables as CreateTables;
 
   // Database data
-  $host = 'ec2-23-21-244-254.compute-1.amazonaws.com';
-  $dbname = 'dd2msimtj928n7';
-  $user = 'rdrqgyesvgiigm';
-  $pass = '886da5a359b454bb65e8363e746a9c400e686fce64546e2ac771600c202bc652';
+  $host = 'localhost';
+  $dbname = 'linebot_db';
+  $user = 'root';
+  $pass = '';
 
   error_log("host: " .$host. "\n");
 
   // connect to the PostgreSQL database
-  $conn = new PDO("pgsql:host=$host;dbname=$dbname", $user, $pass);
+  $conn = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8", $user, $pass);
 
   // Check connection
-  if ($conn->connect_error) {
-      die("Connection failed: " . $conn->connect_error);
-  } 
+  #if ($conn->connect_error) {
+      #die("Connection failed: " . $conn->connect_error);
+  #} 
 
   try {
     
