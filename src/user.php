@@ -23,7 +23,7 @@ class User {
    */
   public function insertUser($token, $answer, $question) {
     // prepare statement for insert
-    $sql = 'INSERT INTO public.users(token, answer, question) VALUES(:token, :answer, :question)';
+    $sql = 'INSERT INTO users(token, answer, question) VALUES(:token, :answer, :question)';
     $stmt = $this->pdo->prepare($sql);
     
     // pass values to the statement
@@ -42,7 +42,7 @@ class User {
    * delete user
    */
   public function deleteUser($userToken) {
-    $sql = sprintf("DELETE FROM public.users WHERE token='%s' ", $userToken);
+    $sql = sprintf("DELETE FROM users WHERE token='%s' ", $userToken);
     $stmt = $this->pdo->query($sql);
 
     return $stmt;
@@ -52,7 +52,7 @@ class User {
    * update user
    */
   public function updateUser($id, $answer) {
-    $sql = sprintf("UPDATE public.users SET answer='%d' WHERE id='%d' ", $answer, $id);
+    $sql = sprintf("UPDATE users SET answer='%d' WHERE id='%d' ", $answer, $id);
     $stmt = $this->pdo->query($sql);
 
     return $stmt;
@@ -62,7 +62,7 @@ class User {
    * Get last user
    */
   public function getLastUser($userToken) {
-    $stmt = $this->pdo->prepare("SELECT * FROM public.users WHERE token = :userToken ORDER BY id DESC LIMIT 1");
+    $stmt = $this->pdo->prepare("SELECT * FROM users WHERE token = :userToken ORDER BY id DESC LIMIT 1");
     $stmt->bindValue(':userToken', $userToken);
     $stmt->execute();
 
