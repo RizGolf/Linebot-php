@@ -6,9 +6,9 @@
 
   // Database data
   $host = '202.44.32.110';
-  $dbname = 'linebot_db';
-  $user = 'Linebot_Exam';
-  $pass = '_3wq3Oh1';
+  $dbname = 'wordpress_6';
+  $user = 'wordpress_0';
+  $pass = 'EE27neing';
 
   error_log("host: " .$host. "\n");
 
