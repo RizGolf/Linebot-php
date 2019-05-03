@@ -22,11 +22,11 @@ $channel_secret = '9c55e495d3111033d3414d2ece36e079';
 $content = file_get_contents('php://input');
 $events = json_decode($content, true);
 
-$host = 'ec2-23-21-244-254.compute-1.amazonaws.com';
-$dbname = 'dd2msimtj928n7';
-$user = 'rdrqgyesvgiigm';
-$pass = '886da5a359b454bb65e8363e746a9c400e686fce64546e2ac771600c202bc652';
-$connection = new PDO("pgsql:host=$host;dbname=$dbname", $user, $pass);
+$host = 'localhost';
+$dbname = 'linebot_db';
+$user = 'root';
+$pass = '';
+$connection = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8", $user, $pass);
 
 // New class to use method in class
 $dbCreator = new Database($connection);
@@ -52,7 +52,7 @@ if (!is_null($events['events'])) {
         error_log("============================== FOLLOW ==============================");
       } else if ($event['type'] == 'message' && $event['message']['type'] == 'text') {
         // Check user already answered 10 questions
-        $sql = sprintf("SELECT * FROM public.users WHERE token='%s' ", $event['source']['userId']);
+        $sql = sprintf("SELECT * FROM users WHERE token='%s' ", $event['source']['userId']);
         $result = $connection->query($sql);
 
         if ($result != false && $result->rowCount() == 11) {
