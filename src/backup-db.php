@@ -12,7 +12,7 @@
   error_log("host: " .$host. "\n");
 
   // connect to the PostgreSQL database
-  $conn = new PDO("pgsql:host=$host;dbname=$dbname", $user, $pass);
+  $conn = new PDO("mysql:host=$host;dbname=$dbname", $user, $pass);
 
   // Check connection
   if ($conn->connect_error) {
