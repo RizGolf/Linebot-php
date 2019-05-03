@@ -23,11 +23,11 @@ public function getQuestion($userToken) {
     error_log("Random question id: ".$randomQuestionId);
     error_log("Random question id with user: ".$userToken);
 
-    $sql = sprintf("SELECT * FROM public.users WHERE question='%d' and token='%s' ", $randomQuestionId, $userToken);
+    $sql = sprintf("SELECT * FROM users WHERE question='%d' and token='%s' ", $randomQuestionId, $userToken);
     $userAlreadyAnswered = $this->pdo->query($sql);
 
     if($userAlreadyAnswered->rowCount() == 0) {
-      $stmt = $this->pdo->prepare("SELECT * FROM public.questions WHERE id = :randomQuestionId");
+      $stmt = $this->pdo->prepare("SELECT * FROM questions WHERE id = :randomQuestionId");
       $stmt->bindValue(':randomQuestionId', $randomQuestionId);
       $stmt->execute();
 
@@ -51,7 +51,7 @@ public function getQuestion($userToken) {
   }
  
   public function getCorrectAnswer($questionNumber) {
-    $stmt = $this->pdo->prepare("SELECT * FROM public.questions WHERE id = :questionNumber");
+    $stmt = $this->pdo->prepare("SELECT * FROM questions WHERE id = :questionNumber");
     $stmt->bindValue(':questionNumber', $questionNumber);
     $stmt->execute();
 
@@ -62,7 +62,7 @@ public function getQuestion($userToken) {
   }
 
   public function getUserAnswer($questionNumber, $userToken) {
-    $stmt = $this->pdo->prepare("SELECT * FROM public.users WHERE question = :questionNumber and token = :userToken");
+    $stmt = $this->pdo->prepare("SELECT * FROM users WHERE question = :questionNumber and token = :userToken");
     $stmt->bindValue(':questionNumber', $questionNumber);
     $stmt->bindValue(':userToken', $userToken);
     $stmt->execute();
