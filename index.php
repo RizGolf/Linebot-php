@@ -5,7 +5,7 @@
   use LineBotExamPostgreSQL\CreateTables as CreateTables;
 
   // Database data
-  $host = '202.44.32.110';
+  $host = 'https://vitawats.staff.kmutnb.ac.th:8443';
   $dbname = 'wordpress_6';
   $user = 'wordpress_0';
   $pass = 'EE27neing';
