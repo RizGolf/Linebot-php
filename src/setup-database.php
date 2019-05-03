@@ -65,7 +65,7 @@ class Database {
    */
   public function insertQuestions($title, $correctAnswer) {
     // prepare statement for insert
-    $sql = 'INSERT INTO public.questions(title, correct_answer) VALUES(:title, :correctAnswer)';
+    $sql = 'INSERT INTO questions(title, correct_answer) VALUES(:title, :correctAnswer)';
     $stmt = $this->pdo->prepare($sql);
     
     // pass values to the statement
@@ -85,7 +85,7 @@ class Database {
      * @return a list of inserted ID
      */
     public function insertQuestionList($questions) {
-      $sql = 'INSERT INTO public.questions(title, correct_answer) VALUES(:title, :correctAnswer)';
+      $sql = 'INSERT INTO questions(title, correct_answer) VALUES(:title, :correctAnswer)';
       $stmt = $this->pdo->prepare($sql);
 
       $idList = [];
@@ -103,7 +103,7 @@ class Database {
    */
   public function insertUser($token, $answer, $question) {
     // prepare statement for insert
-    $sql = 'INSERT INTO public.users(token, answer, question) VALUES(:token, :answer, :question)';
+    $sql = 'INSERT INTO users(token, answer, question) VALUES(:token, :answer, :question)';
     $stmt = $this->pdo->prepare($sql);
     
     // pass values to the statement
